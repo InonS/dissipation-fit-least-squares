@@ -16,4 +16,4 @@ The code is organized into a class (DissipationFitLeastSquares) and two global m
 2. Calling DissipationFitLeastSquares::run().
 
 ## Contact
-[Inon Sharony][www.tau.ac.il/~inonshar]
+Inon Sharony www.tau.ac.il/~inonshar
