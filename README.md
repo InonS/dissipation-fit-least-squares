@@ -10,6 +10,10 @@ My target function (to be minimized) is non-linear, in particular I'm doing an O
 I've invested some time in commenting the code and adding logging printouts, to hopefully assist whoever is trying to follow along.
 The module can be run as a stand-alone program (e.g. from the command-line or Python interpreter), or imported and called from user code (please cite your source if you do).
 The code is organized into a class (DissipationFitLeastSquares) and two global methods (exponentialDecay and main). The program is used in two steps:
+
 1. Creating a DissipationFitLeastSquares object, and passing in various construction arguments (such as the input signal to be fitted, and initial guesses for the parameters, etc.)
+
 2. Calling DissipationFitLeastSquares::run().
 
+## Contact
+[Inon Sharony][www.tau.ac.il/~inonshar]
