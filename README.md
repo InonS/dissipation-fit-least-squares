@@ -1,7 +1,7 @@
 # dissipation-fit-least-squares
 Fit a first-order (exponential) decay to a signal using scipy.optimize.minimize
 
-![Dissipation Fit Least Squares](DissipationFitLeastSquares.jpg)
+![Dissipation Fit Least Squares](resources/DissipationFitLeastSquares.jpg)
 
 ## Motivation
 In an attempt to find a Python (preferably SciPy) package to fit non-linear curves with constraints, I had no luck finding an example that implements simple regression analysis. 
