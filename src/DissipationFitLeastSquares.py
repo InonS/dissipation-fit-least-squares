@@ -13,10 +13,6 @@ from random import gauss
 from scipy.optimize import minimize
 
 
-def exponentialDecay(t, Amp, gamma):
-    return Amp * exp(-gamma * t)
-
-
 class DissipationFitLeastSquares():
     """
     Computes effective dissipation coefficient
@@ -41,11 +37,17 @@ class DissipationFitLeastSquares():
                            = Sum over t of [ y^2 -2*y*f + f^2 ]
 
     target Jacobian (not necessary, but speeds convergence up):
-    jacobian(t;A,g) = Sum over t of [ d(target_function(t;A,g)) / dA , d(target_function(t;A,g)) / dg ]
+    jacobian(t;A,g) = Sum over t of [ d(function(t;A,g)) / dA , d(function(t;A,g)) / dg ]
 
     target Hessian (not necessary, but speeds convergence up):
-    (couldn't be bothered...)
+    hessian(t;A,g) = Sum over t of
+    [ [ d^2(function(t;A,g)) / dA^2 , d^2(function(t;A,g)) / dAdg ],
+      [ d^2(function(t;A,g)) / dgdA , d^2(function(t;A,g)) / dg^2 ] ]
     """
+
+    @classmethod
+    def exponentialDecay(cls, t, Amp, gamma):
+        return Amp * exp(-gamma * t)
 
     def __init__(self, x=None, y=None, n=1000, Amp0=1.0, gamma0=10.0, SNR=25):
 
@@ -74,7 +76,7 @@ class DissipationFitLeastSquares():
         fx = [exponentialDecay(t, self._A_, self._g_) for t in self.x]
         rx = fx + gauss(0, self._A_ / SNR)
         """
-        return [(exponentialDecay(t, self._A_, self._g_) +
+        return [(DissipationFitLeastSquares.exponentialDecay(t, self._A_, self._g_) +
                  gauss(0, self._A_ / SNR)) for t in self.x]
 
     def function(self, thetas):
@@ -113,7 +115,7 @@ class DissipationFitLeastSquares():
 
         A, g = optimizeResult.x
         plot(self.x, self.y, 'r.', self.x,
-             [exponentialDecay(t, A, g) for t in self.x], 'b_')
+             [DissipationFitLeastSquares.exponentialDecay(t, A, g) for t in self.x], 'b_')
         show()
 
 
