@@ -4,12 +4,12 @@
 @organization: Tel Aviv University Department of Chemical Physics
 @since:  Aug 2, 2015
 '''
+from argparse import ArgumentParser
 from logging import basicConfig, info, debug
 from math import exp
+from matplotlib.pyplot import plot, show
 from numpy import linspace, array, square, var
 from random import gauss
-
-from matplotlib.pyplot import plot, show
 from scipy.optimize import minimize
 
 
@@ -31,7 +31,7 @@ class DissipationFitLeastSquares():
 
     noise properties:
     E[eps] = 0
-    STDEV[eps] = Amp * relNoise    
+    STDEV[eps] = Amp / SNR
 
     parameters:
     thetas = [ A, g ]
@@ -47,32 +47,35 @@ class DissipationFitLeastSquares():
     (couldn't be bothered...)
     """
 
-    def __init__(self, x=None, y=None, n=1000, Amp0=1.0, gamma0=10.0, relNoise=0.04):
+    def __init__(self, x=None, y=None, n=1000, Amp0=1.0, gamma0=10.0, SNR=25):
 
         basicConfig(level="DEBUG")
 
         self.n = n
-        self.x = x if x is not Null else linspace(0, 1, self.n)
+        self.x = array(x if x is not None else linspace(0, 1, self.n))
 
         self._A_ = Amp0
         self._g_ = gamma0
         dof = self.n - len([self._A_, self._g_])
 
-        self.y = y if y is not None else self.generateNoisySignal(relNoise)
+        self.y = array(
+            y if y is not None else self.generateNoisySignal(SNR))
 
-        info("{}\nn = {}\nx = {}\ny = {}\nAmp0 = {}\ngamma0 = {}\nrelNoise = {}"
-             .format(self, self.n, self.x.shape, self.y.shape, self._A_, self._g_, relNoise))
+        info("{}\nn = {}\nx = {}\ny = {}\nAmp0 = {}\ngamma0 = {}\nSNR = {}"
+             .format(self, self.n, self.x.shape, self.y.shape, self._A_, self._g_, SNR))
 
         self.varData = var(self.y)
         self.SStot = self.varData * self.n
         debug("(Var[y] = {:.5g}) = ({:s} = {:.5g}) / (dof = {:d})"
               .format(self.varData, r'${SS}_{tot}$', self.SStot, dof))
 
-    def generateNoisySignal(self, relNoise):
+    def generateNoisySignal(self, SNR):
+        """
         fx = [exponentialDecay(t, self._A_, self._g_) for t in self.x]
-        rx = [(exponentialDecay(t, self._A_, self._g_) +
-               gauss(0, self._A_ * relNoise)) for t in self.x]
-        return array(rx)
+        rx = fx + gauss(0, self._A_ / SNR)
+        """
+        return [(exponentialDecay(t, self._A_, self._g_) +
+                 gauss(0, self._A_ / SNR)) for t in self.x]
 
     def function(self, thetas):
         s = 0
@@ -115,12 +118,28 @@ class DissipationFitLeastSquares():
 
 
 def main(args):
-    """
-    python -m DissipationFitLeastSquares [x] [[y] [[[n=1000] [[[[Amp0=1.0] [[[[[gamma0=10.0] [[[[[[relNoise=0.04]]]]]]]]]]]]]]]]
-    """
     dfls = DissipationFitLeastSquares(
-        x=args[1], y=args[2], n=args[3], Amp0=args[4], gamma0=args[5], relNoise=args[6])
+        args.x, args.y, args.n, args.Amp0, args.gamma0, args.SNR)
     dfls.run(disp=True)
 
 if ('__main__' == __name__):
-    main(sys.argv)
+    parser = ArgumentParser(
+        description='Computes effective dissipation coefficient\
+        for an exponentially decaying (scalar) signal\
+        with random Gaussian Markovian noise.')
+    parser.add_argument(
+        '-x', type=list, help='list of time points')
+    parser.add_argument(
+        '-y', type=list, help='values of measurement at time points')
+    parser.add_argument(
+        '-n', type=int, help='number of time points', default=1000)
+    parser.add_argument(
+        '-Amp0', type=float, help='initial guess for dissipation amplitude', default=1.0)
+    parser.add_argument(
+        '-gamma0', type=float, help='initial guess for extinction coefficient', default=10.0)
+    parser.add_argument(
+        '-SNR', type=float, help='signal to noise ratio', default=25)
+
+    parser.print_help()
+
+    main(parser.parse_args())
