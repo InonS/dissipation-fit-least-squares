@@ -36,10 +36,10 @@ class DissipationFitLeastSquares():
     function(t;A,g) = Sum over t of [ ( y(t) - f(t;A,g) )^2 ]
                            = Sum over t of [ y^2 -2*y*f + f^2 ]
 
-    target Jacobian (not necessary, but speeds convergence up):
+    target Jacobian (for GGA methods. Not necessary, but speeds convergence up):
     jacobian(t;A,g) = Sum over t of [ d(function(t;A,g)) / dA , d(function(t;A,g)) / dg ]
 
-    target Hessian (not necessary, but speeds convergence up):
+    target Hessian (for meta-GGA methods. not necessary, but speeds convergence up):
     hessian(t;A,g) = Sum over t of
     [ [ d^2(function(t;A,g)) / dA^2 , d^2(function(t;A,g)) / dAdg ],
       [ d^2(function(t;A,g)) / dgdA , d^2(function(t;A,g)) / dg^2 ] ]
