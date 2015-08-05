@@ -13,7 +13,7 @@ from random import gauss
 from scipy.optimize import minimize
 
 
-class DissipationFitLeastSquares():
+class FitDissipationOrdinaryLeastSquares():
     """
     Computes effective dissipation coefficient
     for an exponentially decaying (scalar) signal
@@ -49,16 +49,22 @@ class DissipationFitLeastSquares():
     def exponentialDecay(cls, t, Amp, gamma):
         return Amp * exp(-gamma * t)
 
-    def __init__(self, x=None, y=None, n=1000, Amp0=1.0, gamma0=10.0, SNR=25):
+    def __init__(self, x=None, y=None, Amp0=1.0, gamma0=10.0, SNR=25):
 
         basicConfig(level="DEBUG")
 
-        self.n = n
-        self.x = array(x if x is not None else linspace(0, 1, self.n))
+        if x is not None and y is not None and array(x).shape != array(y).shape:
+            raise Exception(
+                "data features and labels cannot have mismatching dimensions! x : {} != {} : y".format(x.shape, y.shape))
+
+        N = 1000
+        self.x = array(x if x is not None else linspace(
+            0, 1, y.shape[0] if y is not None else N))
+        self.n = self.x.shape[0]
 
         self._A_ = Amp0
         self._g_ = gamma0
-        dof = self.n - len([self._A_, self._g_])
+        self.dof = self.n - len([self._A_, self._g_])
 
         self.y = array(
             y if y is not None else self.generateNoisySignal(SNR))
@@ -69,14 +75,14 @@ class DissipationFitLeastSquares():
         self.varData = var(self.y)
         self.SStot = self.varData * self.n
         debug("(Var[y] = {:.5g}) = ({:s} = {:.5g}) / (dof = {:d})"
-              .format(self.varData, r'${SS}_{tot}$', self.SStot, dof))
+              .format(self.varData, r'${SS}_{tot}$', self.SStot, self.dof))
 
     def generateNoisySignal(self, SNR):
         """
         fx = [exponentialDecay(t, self._A_, self._g_) for t in self.x]
         rx = fx + gauss(0, self._A_ / SNR)
         """
-        return [(DissipationFitLeastSquares.exponentialDecay(t, self._A_, self._g_) +
+        return [(FitDissipationOrdinaryLeastSquares.exponentialDecay(t, self._A_, self._g_) +
                  gauss(0, self._A_ / SNR)) for t in self.x]
 
     def function(self, thetas):
@@ -107,21 +113,24 @@ class DissipationFitLeastSquares():
 
         SSres = optimizeResult.get('fun')
         # $R^2 \rightarrow 1^{-}$ : perfect fit, $R^2 \rightarrow 0^{+}$ : no fit
+        R2 = 1 - SSres / self.SStot
         info("coefficient of determination ({:s}) = {:.2%}"
-             .format(r'$R^2$', 1 - SSres / self.SStot))
+             .format(r'$R^2$', R2))
         # chi^2 >> 1 : under-fitting, chi^2 << 1 : over-fitting
+        Chi2 = SSres / self.varData
         info("goodness of fit ({:s}, {:s}{:d}) = {:.2%}".format(
-            r'$\Chi^2_{\ni}$', r'$\ni=$', self.n, SSres / self.varData))
+            r'$\Chi^2_{\ni}$', r'$\ni=$', self.dof, Chi2))
 
         A, g = optimizeResult.x
         plot(self.x, self.y, 'r.', self.x,
-             [DissipationFitLeastSquares.exponentialDecay(t, A, g) for t in self.x], 'b_')
+             [FitDissipationOrdinaryLeastSquares.exponentialDecay(t, A, g) for t in self.x], 'b_')
         show()
+        return optimizeResult, R2, Chi2
 
 
 def main(args):
-    dfls = DissipationFitLeastSquares(
-        args.x, args.y, args.n, args.Amp0, args.gamma0, args.SNR)
+    dfls = FitDissipationOrdinaryLeastSquares(
+        args.x, args.y, args.Amp0, args.gamma0, args.SNR)
     dfls.run(disp=True)
 
 if ('__main__' == __name__):
@@ -133,8 +142,6 @@ if ('__main__' == __name__):
         '-x', type=list, help='list of time points')
     parser.add_argument(
         '-y', type=list, help='values of measurement at time points')
-    parser.add_argument(
-        '-n', type=int, help='number of time points', default=1000)
     parser.add_argument(
         '-Amp0', type=float, help='initial guess for dissipation amplitude', default=1.0)
     parser.add_argument(
