@@ -15,11 +15,11 @@ I've invested some time in commenting the code and adding logging printouts, to 
 
 The module can be run as a stand-alone program (e.g. from the command-line or Python interpreter), or imported and called from user code (please cite your source if you do).
 
-The code is organized into a class (DissipationFitLeastSquares) and two global methods (exponentialDecay and main). The program is used in two steps:
+The code is organized into a class (FitDissipationOrdinaryLeastSquares) and a main() function. The program is used in two steps:
 
-1. Creating a DissipationFitLeastSquares object, and passing in various construction arguments (such as the input signal to be fitted, and initial guesses for the parameters, etc.)
+1. Creating a FitDissipationOrdinaryLeastSquares object, and passing in various construction arguments (such as the input signal to be fitted, and initial guesses for the parameters, etc.)
 
-2. Calling DissipationFitLeastSquares.run().
+2. Calling FitDissipationOrdinaryLeastSquares.run().
 
 ## Development notes
 I've tried generalizing this to any function (using SymPy) but found that multidimensional derivatives (function with respect to unknown parameters) are hard to implement with SymPy. It's just not worth the bother; I suggest migrating such problems to Julia or Sage, for example.
