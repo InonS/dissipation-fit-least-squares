@@ -39,7 +39,7 @@ class FitDissipationOrdinaryLeastSquaresTest(unittest.TestCase):
         self.assertAlmostEqual(
             optimizeResult.x[1], g, places=logAbsErrTol, msg="Dissipation coefficient is not almost equal to generating value")
         self.assertGreater(
-            R2, 0.97, msg="Coefficient of determination is not above 95%")
+            R2, 0.97, msg="Coefficient of determination is not above 97%")
         self.assertGreater(
             Chi2, 1 / 3, msg="Goodness of fit is not above 33.33%")
         self.assertLess(Chi2, 3, msg="Goodness of fit is below 300%")
