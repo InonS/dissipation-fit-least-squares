@@ -42,7 +42,7 @@ class FitDissipationOrdinaryLeastSquaresTest(unittest.TestCase):
             R2, 0.97, msg="Coefficient of determination is not above 97%")
         self.assertGreater(
             Chi2, 1 / 3, msg="Goodness of fit is not above 33.33%")
-        self.assertLess(Chi2, 3, msg="Goodness of fit is below 300%")
+        self.assertLess(Chi2, 3, msg="Goodness of fit is not below 300%")
 
     @classmethod
     def getSubTestSet(cls):
