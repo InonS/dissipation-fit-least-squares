@@ -11,6 +11,15 @@ from src.FitDissipationOrdinaryLeastSquares import FitDissipationOrdinaryLeastSq
 
 
 class FitDissipationOrdinaryLeastSquaresTest(unittest.TestCase):
+    """
+    Web resources:
+    https://docs.python.org/3/library/unittest.html#classes-and-functions
+    http://pymotw.com/2/unittest/
+    http://docs.python-guide.org/en/latest/writing/tests/
+    http://www.openp2p.com/pub/a/python/2004/12/02/tdd_pyunit.html
+    http://www.drdobbs.com/testing/unit-testing-with-python/240165163
+    http://www.diveintopython3.net/unit-testing.html
+    """
 
     def setUp(self):
         pass
