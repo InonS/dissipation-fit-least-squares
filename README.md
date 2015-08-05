@@ -19,6 +19,7 @@ The code is organized into a class (DissipationFitLeastSquares) and two global m
 
 ## Development notes
 I've tried generalizing this to any function (using SymPy) but found that multidimensional derivatives (function with respect to unknown parameters) are hard to implement with SymPy. It's just not worth the bother; I suggest migrating such problems to Julia or Sage, for example.
+Forking and pull requests are welcome! (please cite your source if you do)
 
 ## Contact
 [Inon Sharony](www.tau.ac.il/~inonshar)
