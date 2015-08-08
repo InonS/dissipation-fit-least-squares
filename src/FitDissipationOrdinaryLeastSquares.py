@@ -49,7 +49,7 @@ class FitDissipationOrdinaryLeastSquares():
     def exponentialDecay(cls, t, Amp, gamma):
         return Amp * exp(-gamma * t)
 
-    def __init__(self, x=None, y=None, Amp0=1.0, gamma0=10.0, SNR=25):
+    def __init__(self, x=None, y=None, Amp0=1.0, gamma0=1.0, SNR=10.0):
 
         basicConfig(level="DEBUG")
 
@@ -82,6 +82,8 @@ class FitDissipationOrdinaryLeastSquares():
         fx = [exponentialDecay(t, self._A_, self._g_) for t in self.x]
         rx = fx + gauss(0, self._A_ / SNR)
         """
+        info(
+            "generating noisy signal from {} * exp (-{} * t) + N(0, {})".format(self._A_, self._g_, self._A_ * SNR))
         return [(FitDissipationOrdinaryLeastSquares.exponentialDecay(t, self._A_, self._g_) +
                  gauss(0, self._A_ / SNR)) for t in self.x]
 
