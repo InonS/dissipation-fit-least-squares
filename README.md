@@ -1,6 +1,8 @@
 # dissipation-fit-least-squares
 Fit a first-order (exponential) decay to a signal using scipy.optimize.minimize
 
+https://zenodo.org/badge/18810/InonS/dissipation-fit-least-squares.svg
+
 ![Dissipation Fit Least Squares](resources/DissipationFitLeastSquares.jpg)
 
 ## Motivation
